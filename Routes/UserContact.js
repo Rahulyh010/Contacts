@@ -6,31 +6,46 @@ const { adminAuth } = require("../Middlewares/Auth");
 
 const ContactRouter=express.Router();
 
+
 ContactRouter.get("/:n",adminAuth, async(req,res)=>{
     let {n}=req.params;
     let n2= n*10;
     let n1= n2-10;
 
-    try {
-        let data=await ContactModel.find();
-        
-        let arr= [];
-        for(let i=n1;i<n2;i++){
-            if(data[i]==undefined){
-                res.send(arr);
+    if(n){
+        try {
+            let data=await ContactModel.find();
+            
+            let arr= [];
+            for(let i=n1;i<n2;i++){
+                if(data[i]==undefined){
+                    res.send(arr);
+                    return;
+                }
+                arr.push(data[i]);
             }
-            arr.push(data[i]);
+            res.send(arr);
+            return;
+        } catch (error) {
+           res.send("error") 
         }
-        res.send(arr);
-    } catch (error) {
-       res.send("error") 
+    }else{
+                  
     }
+
+   
+})
+
+
+ContactRouter.get("/",async(req,res)=>{
+    let data = await ContactModel.find();
+        res.send(data);               
 })
 
 ContactRouter.get("/searchbyemail/:email",adminAuth,async(req,res)=>{
   const {email}=req.params;
 try {
-    let data= await ContactModel.find({email});
+    let data= await ContactModel.find({email});           
    
     if(data.length==0){
         res.status(400).send({"msg":"No user Found"})
@@ -98,8 +113,8 @@ ContactRouter.delete("/delete/:id",adminAuth, async(req,res)=>{
   }
   
   
-  
-})
+                  
+})                    
 
 
 ContactRouter.patch("/edit/:id",adminAuth, async(req,res)=>{
